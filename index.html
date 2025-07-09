@@ -264,7 +264,7 @@
   }
 </style>
 </head>
-<body>
+<body onmousedown="userInteracted=true" onclick="userInteracted=true">
   <h1>Study Portal</h1>
   <div class="mode-buttons">
     <button class="mode-btn" onclick="switchToFlashcards()">Flashcards</button>
@@ -300,17 +300,18 @@
         <thead><tr><th>Word</th><th>Meaning</th></tr></thead>
         <tbody id="summary-body"></tbody>
       </table>
-      <div id="reset-matching">
-        <button onclick="startMatching()">Restart Practice</button>
-      </div>
+      <div id="reset-matching" style="margin-top: 30px;">
+  <button style="background-color: #67afcf; color: white; font-weight: bold; font-size: 1.1rem; border-radius: 12px; padding: 16px 38px; border: none; box-shadow: 0 2px 10px rgba(103,175,207,0.13); cursor: pointer; letter-spacing: 0.03em;" onclick="startMatching()">Restart Practice</button>
+</div>
     </div>
   </div>
 
-  <audio id="sound-correct" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_64f4dd61cf.mp3?filename=correct-6033.mp3" preload="auto"></audio>
-  <audio id="sound-wrong" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_cdf1a9b6ab.mp3?filename=wrong-6034.mp3" preload="auto"></audio>
-  <audio id="swoosh" src="https://cdn.pixabay.com/download/audio/2022/10/30/audio_a896c07b61.mp3?filename=woosh-transition-109276.mp3" preload="auto"></audio>
+  <audio id="sound-correct" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_13f5067223.mp3" preload="auto"></audio>
+  <audio id="sound-wrong" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5a84e4ffb8.mp3" preload="auto"></audio>
+  <audio id="swoosh" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_f32bf3e7b2.mp3" preload="auto"></audio>
 
   <script>
+let userInteracted = false;
     const portalWords = [
   { en: 'apple', ja: 'りんご', definition: 'a round fruit with red or green skin' },
   { en: 'run', ja: '走る', definition: 'to move swiftly on foot' },
@@ -386,9 +387,10 @@
       wrapper.onclick = () => {
         flipped = !flipped;
         wrapper.classList.toggle('flipped');
-        document.getElementById('flipSound').play();
+        const flipSound = document.getElementById('flipSound');
+if (flipSound && userInteracted) flipSound.play().catch(() => {});
         const swooshAudio = document.getElementById('swoosh');
-if (swooshAudio) swooshAudio.play();
+if (swooshAudio && userInteracted) swooshAudio.play().catch(() => {});
         document.getElementById('controls').style.display = flipped ? 'flex' : 'none';
         if (flipped) {
           wrapper.classList.add('wiggle');
@@ -470,7 +472,7 @@ function nextMatch() {
       btn.style.borderColor = correct ? 'green' : 'red';
       btn.style.boxShadow = `0 0 10px ${correct ? 'green' : 'red'}`;
       const sound = document.getElementById(correct ? 'sound-correct' : 'sound-wrong');
-if (sound) sound.play();
+if (sound && userInteracted) sound.play().catch(() => {});
 
       if (!correct) {
         const correctBtn = [...optionsBox.children].find(b => b.textContent === current.en);
