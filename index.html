@@ -11,7 +11,7 @@
       text-align: center;
       margin: 0;
       padding: 0;
-      height: 100%;
+      min-height: 100%;
     }
     h1 {
       font-size: 44px;
@@ -20,15 +20,21 @@
       color: #ffbfa8;
       letter-spacing: 1.5px;
     }
+    .deck-progress {
+      margin: 10px auto 8px auto;
+      color: #67afcf;
+      font-size: 1.15em;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
     #card-container {
       position: relative;
       width: 96vw;
       max-width: 340px;
       height: 60vw;
       max-height: 420px;
-      margin: 0 auto;
+      margin: 0 auto 26px auto;
       perspective: 1000px;
-      margin-bottom: 26px;
       min-height: 200px;
       background: transparent;
       touch-action: manipulation;
@@ -65,11 +71,12 @@
       padding: 10px;
       user-select: none;
       word-break: break-word;
-      color: #333;
+      color: #111 !important;
       font-weight: 700;
+      transition: color 0.2s;
     }
-    .front { z-index: 2; color: #67afcf; }
-    .back  { transform: rotateY(180deg); z-index: 1; color: #ffbfa8;}
+    .front { z-index: 2; }
+    .back  { transform: rotateY(180deg); z-index: 1; }
     @keyframes wiggle-flip {
       0%   { transform: rotateY(0deg)   rotateZ(0deg) scale(1); }
       30%  { transform: rotateY(45deg)  rotateZ(-2deg) scale(1.03);}
@@ -119,32 +126,44 @@
       transition: background 0.18s;
     }
     #reset-btn:active, #reset-btn:focus { background: #479fbc; }
-    .table-container {
-      display: flex;
+    #review-table-wrap {
+      display: none;
       justify-content: center;
       margin-top: 30px;
       margin-bottom: 20px;
       width: 100%;
+      flex-direction: column;
+      align-items: center;
+    }
+    #review-table-wrap h2 {
+      margin-bottom: 18px;
+      margin-top: 0;
+      font-size: 1.35em;
+      color: #67afcf;
+      letter-spacing: 0.04em;
     }
     table {
       border-collapse: collapse;
       width: 100%;
-      max-width: 370px;
+      max-width: 350px;
       font-size: 1.13rem;
       background: #fff;
       border-radius: 10px;
       overflow: hidden;
       box-shadow: 0 2px 8px rgba(103,175,207,0.09);
-      text-align: center;
       margin: 0 auto;
+      table-layout: fixed;
     }
     th, td {
       border: 1px solid #ffe3d6;
-      padding: 10px 10px;
-      text-align: left;
+      padding: 12px 10px;
+      text-align: center;
       color: #111 !important;
       font-weight: 600;
       font-size: 1.12em;
+      word-break: break-word;
+      max-width: 140px;
+      overflow-wrap: break-word;
     }
     th {
       background-color: #ffbfa8;
@@ -152,21 +171,15 @@
       font-weight: 800;
       font-size: 1.12em;
     }
-    .deck-progress {
-      margin: 10px auto 8px auto;
-      color: #67afcf;
-      font-size: 1.15em;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-    }
     @media (max-width: 500px) {
       h1 { font-size: 28px; }
       .front, .back { font-size: 1.14rem; min-height: 80px; }
       #reset-btn { font-size: 0.98rem; padding: 12px 10px; }
       .nav-btn { min-height: 42px; min-width: 60px; font-size: 0.98rem; }
       #card-container { max-width: 98vw; height: 36vw; min-height: 70px;}
-      .table-container { margin-top: 14px; }
-      table { font-size: 1rem; max-width: 98vw; }
+      #review-table-wrap { margin-top: 14px; }
+      table { font-size: 0.98rem; max-width: 98vw; }
+      th, td { font-size: 0.98rem; max-width: 90px;}
       #controls { margin-top: 24px; }
     }
   </style>
@@ -179,6 +192,10 @@
   <div id="controls">
     <button id="knownBtn" class="nav-btn">✔ I know this</button>
     <button id="againBtn" class="nav-btn">✘ Study again</button>
+  </div>
+  <div id="review-table-wrap">
+    <h2>You now know…</h2>
+    <table id="review-table"></table>
   </div>
   <div id="reset-container" style="display:none;">
     <button id="reset-btn">Restart Practice</button>
@@ -221,25 +238,30 @@
 
     function showNextCard() {
       const container = document.getElementById('card-container');
+      const reviewTableWrap = document.getElementById('review-table-wrap');
       container.innerHTML = '';
+      reviewTableWrap.style.display = 'none';
       document.getElementById('controls').style.display = 'none';
       document.getElementById('reset-container').style.display = 'none';
       showProgress();
 
       if (portalFlashcards.length === 0) {
-        container.innerHTML = '<h2 style="margin-top:0;">You now know…</h2>';
-        const wrap = document.createElement('div');
-        wrap.className = 'table-container';
-        const tbl = document.createElement('table');
+        // Hide card area, show table
+        container.style.display = 'none';
+        reviewTableWrap.style.display = 'flex';
+        document.getElementById('reset-container').style.display = 'block';
+
+        const tbl = document.getElementById('review-table');
         tbl.innerHTML =
           '<thead><tr><th>English</th><th>Japanese</th></tr></thead>' +
           '<tbody>' +
           portalKnownWords.map(w => `<tr><td>${w.en}</td><td>${w.ja}</td></tr>`).join('') +
           '</tbody>';
-        wrap.appendChild(tbl);
-        container.appendChild(wrap);
-        document.getElementById('reset-container').style.display = 'block';
         return;
+      } else {
+        // Normal mode: show card, hide table
+        container.style.display = 'flex';
+        reviewTableWrap.style.display = 'none';
       }
 
       const word = portalFlashcards[0];
@@ -305,6 +327,8 @@
       portalFlashcards = shuffle(portalWords.map(word => ({ ...word })));
       portalKnownWords = [];
       progress = {};
+      document.getElementById('card-container').style.display = 'flex';
+      document.getElementById('review-table-wrap').style.display = 'none';
       showNextCard();
     }
 
