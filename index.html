@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Study Portal</title>
+  <style>
+    html, body {
+      background-color: #fff0f0;
+      font-family: 'Nunito', sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    h1 {
+      font-size: 48px;
+      margin: 24px 0 24px 0;
+    }
+    #card-container {
+      position: relative;
+      width: 92vw;
+      max-width: 420px;
+      height: 66vw;
+      max-height: 600px;
+      margin: 0 auto;
+      perspective: 1000px;
+      touch-action: manipulation;
+      margin-bottom: 20px;
+      min-height: 220px;
+      background: transparent;
+    }
+    .card-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(.45,1.8,.6,1);
+      cursor: pointer;
+      border-radius: 14px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.11);
+      background: transparent;
+    }
+    .card-wrapper.flipped {
+      transform: rotateY(180deg);
+      animation: wiggle-flip 0.6s;
+    }
+    .front, .back {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      border-radius: 14px;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backface-visibility: hidden;
+      font-size: 8vw;
+      min-height: 160px;
+      padding: 10px;
+      user-select: none;
+      word-break: break-word;
+    }
+    .front { z-index: 2; }
+    .back  { transform: rotateY(180deg); z-index: 1; }
+    @keyframes wiggle-flip {
+      0%   { transform: rotateY(0deg)   rotateZ(0deg) scale(1); }
+      30%  { transform: rotateY(45deg)  rotateZ(-3deg) scale(1.02);}
+      60%  { transform: rotateY(130deg) rotateZ(3deg)  scale(1.02);}
+      100% { transform: rotateY(180deg) rotateZ(0deg)  scale(1);}
+    }
+    #controls {
+      margin-top: 24px;
+      display: none;
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+    }
+    .nav-btn {
+      background-color: #ffbfa8;
+      border: none;
+      padding: 16px 20px;
+      margin: 0;
+      cursor: pointer;
+      border-radius: 10px;
+      font-size: 1.15rem;
+      font-weight: bold;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.09);
+      min-width: 115px;
+      min-height: 50px;
+      transition: background 0.18s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5em;
+    }
+    #controls .nav-btn:first-child { background-color: #67cf94; }
+    #controls .nav-btn:last-child  { background-color: #cf6767; }
+    #reset-btn {
+      margin: 28px auto 0 auto;
+      background-color: #67afcf;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 10px;
+      padding: 16px 38px;
+      box-shadow: 0 2px 7px rgba(0,0,0,0.13);
+      cursor: pointer;
+      display: block;
+      letter-spacing: 0.03em;
+      transition: background 0.18s;
+    }
+    #reset-btn:active, #reset-btn:focus { background: #479fbc; }
+    table {
+      margin: 18px auto;
+      border-collapse: collapse;
+      width: 94vw;
+      max-width: 400px;
+      font-size: 1.15rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px 10px;
+      text-align: left;
+    }
+    th { background-color: #ffbfa8; }
+    /* Mobile first */
+    @media (max-width: 500px) {
+      h1 { font-size: 32px; }
+      .front, .back { font-size: 7vw; min-height: 120px; }
+      #reset-btn { font-size: 1rem; padding: 14px 15px; }
+      .nav-btn { min-height: 44px; min-width: 80px; font-size: 1rem; }
+      #card-container { max-width: 99vw; height: 46vw; min-height: 110px;}
+    }
+  </style>
+</head>
+<body>
+  <h1>Study Portal</h1>
+  <audio id="flipSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
+
+  <div id="card-container"></div>
+
+  <div id="controls">
+    <button id="knownBtn" class="nav-btn">✔ I know this</button>
+    <button id="againBtn" class="nav-btn">✘ Study again</button>
+  </div>
+
+  <div id="reset-container" style="display:none;">
+    <button id="reset-btn">Restart Practice</button>
+  </div>
+
+  <script>
+    const portalWords = [
+      { en: 'apple', ja: 'りんご' },
+      { en: 'run', ja: '走る' },
+      { en: 'think', ja: '考える' },
+      { en: 'swim', ja: '泳ぐ' },
+      { en: 'mountain', ja: '山' },
+      { en: 'river', ja: '川' },
+      { en: 'dog', ja: '犬' },
+      { en: 'cat', ja: '猫' },
+      { en: 'book', ja: '本' },
+      { en: 'eat', ja: '食べる' }
+    ];
+    let portalFlashcards = [];
+    let portalKnownWords = [];
+    let flipped = false;
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function showNextCard() {
+      const container = document.getElementById('card-container');
+      container.innerHTML = '';
+      document.getElementById('controls').style.display = 'none';
+      document.getElementById('reset-container').style.display = 'none';
+
+      if (portalFlashcards.length === 0) {
+        container.innerHTML = '<h2 style="margin-top:0;">You now know…</h2>';
+        const tbl = document.createElement('table');
+        tbl.innerHTML =
+          '<thead><tr><th>English</th><th>Japanese</th></tr></thead>' +
+          '<tbody>' +
+          portalKnownWords.map(w => `<tr><td>${w.en}</td><td>${w.ja}</td></tr>`).join('') +
+          '</tbody>';
+        container.appendChild(tbl);
+        document.getElementById('reset-container').style.display = 'block';
+        return;
+      }
+
+      const word = portalFlashcards[0];
+      const wrapper = document.createElement('div');
+      wrapper.className = 'card-wrapper';
+      flipped = false;
+
+      wrapper.onclick = () => {
+        flipped = !flipped;
+        wrapper.classList.toggle('flipped');
+        if (flipped) {
+          wrapper.classList.add('wiggle');
+          document.getElementById('flipSound').play();
+          document.getElementById('controls').style.display = 'flex';
+          setTimeout(() => wrapper.classList.remove('wiggle'), 650);
+        } else {
+          document.getElementById('flipSound').play();
+          document.getElementById('controls').style.display = 'none';
+        }
+      };
+
+      const front = document.createElement('div');
+      front.className = 'front';
+      front.textContent = word.en;
+
+      const back = document.createElement('div');
+      back.className = 'back';
+      back.textContent = word.ja;
+
+      wrapper.appendChild(front);
+      wrapper.appendChild(back);
+      container.appendChild(wrapper);
+    }
+
+    document.getElementById('knownBtn').onclick = () => {
+      if (portalFlashcards.length > 0) {
+        portalKnownWords.push(portalFlashcards.shift());
+        showNextCard();
+      }
+    };
+
+    document.getElementById('againBtn').onclick = () => {
+      if (portalFlashcards.length > 0) {
+        const w = portalFlashcards.shift();
+        const pos = Math.floor(Math.random() * (portalFlashcards.length + 1));
+        portalFlashcards.splice(pos, 0, w);
+        showNextCard();
+      }
+    };
+
+    document.getElementById('reset-btn').onclick = () => {
+      portalFlashcards = shuffle([...portalWords]);
+      portalKnownWords = [];
+      showNextCard();
+    };
+
+    // For mobile, prevent double-tap zoom
+    document.addEventListener('touchstart', function (event) {
+      if (event.touches.length > 1) { event.preventDefault(); }
+    }, { passive: false });
+
+    window.onload = function() {
+      portalFlashcards = shuffle([...portalWords]);
+      portalKnownWords = [];
+      showNextCard();
+    };
+  </script>
+</body>
+</html>
