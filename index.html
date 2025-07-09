@@ -77,7 +77,7 @@
       100% { transform: rotateY(180deg) rotateZ(0deg)  scale(1);}
     }
     #controls {
-      margin-top: 34px; /* More space under card */
+      margin-top: 34px;
       display: none;
       display: flex;
       justify-content: center;
@@ -119,24 +119,39 @@
       transition: background 0.18s;
     }
     #reset-btn:active, #reset-btn:focus { background: #479fbc; }
+    .table-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+      margin-bottom: 20px;
+      width: 100%;
+    }
     table {
-      margin: 28px auto 0 auto;
       border-collapse: collapse;
-      width: 98vw;
-      max-width: 350px;
+      width: 100%;
+      max-width: 370px;
       font-size: 1.13rem;
       background: #fff;
       border-radius: 10px;
       overflow: hidden;
       box-shadow: 0 2px 8px rgba(103,175,207,0.09);
       text-align: center;
+      margin: 0 auto;
     }
     th, td {
       border: 1px solid #ffe3d6;
       padding: 10px 10px;
       text-align: left;
+      color: #111 !important;
+      font-weight: 600;
+      font-size: 1.12em;
     }
-    th { background-color: #ffbfa8; color: #fff;}
+    th {
+      background-color: #ffbfa8;
+      color: #fff !important;
+      font-weight: 800;
+      font-size: 1.12em;
+    }
     .deck-progress {
       margin: 10px auto 8px auto;
       color: #67afcf;
@@ -150,6 +165,7 @@
       #reset-btn { font-size: 0.98rem; padding: 12px 10px; }
       .nav-btn { min-height: 42px; min-width: 60px; font-size: 0.98rem; }
       #card-container { max-width: 98vw; height: 36vw; min-height: 70px;}
+      .table-container { margin-top: 14px; }
       table { font-size: 1rem; max-width: 98vw; }
       #controls { margin-top: 24px; }
     }
@@ -212,13 +228,16 @@
 
       if (portalFlashcards.length === 0) {
         container.innerHTML = '<h2 style="margin-top:0;">You now know…</h2>';
+        const wrap = document.createElement('div');
+        wrap.className = 'table-container';
         const tbl = document.createElement('table');
         tbl.innerHTML =
           '<thead><tr><th>English</th><th>Japanese</th></tr></thead>' +
           '<tbody>' +
           portalKnownWords.map(w => `<tr><td>${w.en}</td><td>${w.ja}</td></tr>`).join('') +
           '</tbody>';
-        container.appendChild(tbl);
+        wrap.appendChild(tbl);
+        container.appendChild(wrap);
         document.getElementById('reset-container').style.display = 'block';
         return;
       }
