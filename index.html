@@ -29,7 +29,7 @@
     }
     #card-container {
       position: relative;
-      width: 96vw;
+      width: 92vw;
       max-width: 340px;
       height: 60vw;
       max-height: 420px;
@@ -171,16 +171,32 @@
       font-weight: 800;
       font-size: 1.12em;
     }
-    @media (max-width: 500px) {
-      h1 { font-size: 28px; }
-      .front, .back { font-size: 1.14rem; min-height: 80px; }
-      #reset-btn { font-size: 0.98rem; padding: 12px 10px; }
-      .nav-btn { min-height: 42px; min-width: 60px; font-size: 0.98rem; }
-      #card-container { max-width: 98vw; height: 36vw; min-height: 70px;}
+    @media (max-width: 600px) {
+      #card-container {
+        width: 82vw;
+        max-width: 290px;
+        height: 45vw;
+        max-height: 300px;
+        min-height: 100px;
+      }
+      .front, .back {
+        font-size: 2.0rem;
+        padding: 8px;
+      }
+      table { font-size: 1rem; max-width: 96vw; }
+      th, td { font-size: 1rem; max-width: 90px;}
       #review-table-wrap { margin-top: 14px; }
-      table { font-size: 0.98rem; max-width: 98vw; }
-      th, td { font-size: 0.98rem; max-width: 90px;}
-      #controls { margin-top: 24px; }
+      #controls { margin-top: 22px; }
+    }
+    @media (max-width: 400px) {
+      #card-container {
+        width: 92vw;
+        max-width: 220px;
+        min-height: 90px;
+      }
+      .front, .back { font-size: 1.3rem; }
+      table { font-size: 0.96rem; }
+      th, td { font-size: 0.96rem; }
     }
   </style>
 </head>
@@ -246,7 +262,6 @@
       showProgress();
 
       if (portalFlashcards.length === 0) {
-        // Hide card area, show table
         container.style.display = 'none';
         reviewTableWrap.style.display = 'flex';
         document.getElementById('reset-container').style.display = 'block';
@@ -259,7 +274,6 @@
           '</tbody>';
         return;
       } else {
-        // Normal mode: show card, hide table
         container.style.display = 'flex';
         reviewTableWrap.style.display = 'none';
       }
