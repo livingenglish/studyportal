@@ -5,6 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Study Portal</title>
   <style>
+    #definition {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #222;
+      margin-bottom: 20px;
+    }
+    #timer {
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    #definition {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #222;
+      margin-bottom: 20px;
+    }
+      font-size: 1.5rem;
+      margin: 20px auto;
+      padding: 10px;
+      max-width: 600px;
+      font-weight: bold;
+    }
+    .options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+    .options .mode-btn {
+      font-size: 1.1rem;
+      padding: 12px 20px;
+    }
     html, body {
       background-color: #fff0f0;
       font-family: 'Nunito', sans-serif;
@@ -15,10 +50,28 @@
     }
     h1 {
       font-size: 44px;
-      margin: 18px 0 16px 0;
+      margin: 18px 0 10px;
       font-weight: 900;
       color: #ffbfa8;
       letter-spacing: 1.5px;
+    }
+    .mode-buttons {
+      margin: 16px auto 26px auto;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+    }
+    .mode-btn {
+      background-color: #67afcf;
+      border: none;
+      color: white;
+      font-weight: bold;
+      font-size: 1.1rem;
+      border-radius: 12px;
+      padding: 14px 26px;
+      box-shadow: 0 2px 10px rgba(103,175,207,0.13);
+      cursor: pointer;
+      letter-spacing: 0.03em;
     }
     .deck-progress {
       margin: 10px auto 8px auto;
@@ -169,7 +222,6 @@
       background-color: #ffbfa8;
       color: #fff !important;
       font-weight: 800;
-      font-size: 1.12em;
     }
     @media (max-width: 600px) {
       #card-container {
@@ -197,38 +249,80 @@
       .front, .back { font-size: 1.3rem; }
       table { font-size: 0.96rem; }
       th, td { font-size: 0.96rem; }
-    }
-  </style>
+    }    #timer {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  .options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+</style>
 </head>
 <body>
   <h1>Study Portal</h1>
-  <div class="deck-progress" id="progress"></div>
-  <audio id="flipSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
-  <div id="card-container"></div>
-  <div id="controls">
-    <button id="knownBtn" class="nav-btn">✔ I know this</button>
-    <button id="againBtn" class="nav-btn">✘ Study again</button>
+  <div class="mode-buttons">
+    <button class="mode-btn" onclick="switchToFlashcards()">Flashcards</button>
+    <button class="mode-btn" onclick="startMatching()">Matching</button>
   </div>
-  <div id="review-table-wrap">
-    <h2>You now know…</h2>
-    <table id="review-table"></table>
+
+  <div id="flashcards-section">
+    <div id="flashcards">
+      <div class="deck-progress" id="progress"></div>
+      <audio id="flipSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
+      <div id="card-container"></div>
+      <div id="controls">
+        <button id="knownBtn" class="nav-btn">✔ I know this</button>
+        <button id="againBtn" class="nav-btn">✘ Study again</button>
+      </div>
+      <div id="review-table-wrap">
+        <h2>You now know…</h2>
+        <table id="review-table"></table>
+      </div>
+      <div id="reset-container" style="display:none;">
+        <button id="reset-btn">Restart Practice</button>
+      </div>
+    </div>
   </div>
-  <div id="reset-container" style="display:none;">
-    <button id="reset-btn">Restart Practice</button>
+
+  <div id="matching-section">
+    <div id="timer"></div>
+    <div id="definition"></div>
+    <div class="options" id="option-buttons"></div>
+    <div id="matching-summary">
+      <h2>Summary</h2>
+      <table>
+        <thead><tr><th>Word</th><th>Meaning</th></tr></thead>
+        <tbody id="summary-body"></tbody>
+      </table>
+      <div id="reset-matching">
+        <button onclick="startMatching()">Restart Practice</button>
+      </div>
+    </div>
   </div>
+
+  <audio id="sound-correct" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_64f4dd61cf.mp3?filename=correct-6033.mp3" preload="auto"></audio>
+  <audio id="sound-wrong" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_cdf1a9b6ab.mp3?filename=wrong-6034.mp3" preload="auto"></audio>
+  <audio id="swoosh" src="https://cdn.pixabay.com/download/audio/2022/10/30/audio_a896c07b61.mp3?filename=woosh-transition-109276.mp3" preload="auto"></audio>
+
   <script>
     const portalWords = [
-      { en: 'apple', ja: 'りんご' },
-      { en: 'run', ja: '走る' },
-      { en: 'think', ja: '考える' },
-      { en: 'swim', ja: '泳ぐ' },
-      { en: 'mountain', ja: '山' },
-      { en: 'river', ja: '川' },
-      { en: 'dog', ja: '犬' },
-      { en: 'cat', ja: '猫' },
-      { en: 'book', ja: '本' },
-      { en: 'eat', ja: '食べる' }
-    ];
+  { en: 'apple', ja: 'りんご', definition: 'a round fruit with red or green skin' },
+  { en: 'run', ja: '走る', definition: 'to move swiftly on foot' },
+  { en: 'think', ja: '考える', definition: 'to use your mind to form ideas' },
+  { en: 'swim', ja: '泳ぐ', definition: 'to move through water using arms and legs' },
+  { en: 'mountain', ja: '山', definition: 'a large natural elevation of the earth surface' },
+  { en: 'river', ja: '川', definition: 'a large natural stream of water flowing in a channel' },
+  { en: 'dog', ja: '犬', definition: 'a domesticated animal that barks' },
+  { en: 'cat', ja: '猫', definition: 'a small domesticated animal that meows' },
+  { en: 'book', ja: '本', definition: 'a set of written or printed pages bound together' },
+  { en: 'eat', ja: '食べる', definition: 'to put food into your mouth and swallow it' }
+];
     const REQUIRED_KNOWS = 3;
     let portalFlashcards = [];
     let portalKnownWords = [];
@@ -248,8 +342,15 @@
       const reviewing = portalFlashcards.length;
       document.getElementById('progress').textContent = 
         mastered < total
-        ? `Words mastered: ${mastered}/${total}  |  Remaining: ${reviewing}`
-        : `All done! Words mastered: ${mastered}/${total}`;
+          ? `Words mastered: ${mastered}/${total}  |  Remaining: ${reviewing}`
+          : `All done! Words mastered: ${mastered}/${total}`;
+    }
+
+    function switchToFlashcards() {
+      document.getElementById('flashcards-section').style.display = 'block';
+      const matchSection = document.getElementById('matching-section');
+      if (matchSection) matchSection.style.display = 'none';
+      showNextCard();
     }
 
     function showNextCard() {
@@ -267,16 +368,15 @@
         document.getElementById('reset-container').style.display = 'block';
 
         const tbl = document.getElementById('review-table');
-        tbl.innerHTML =
-          '<thead><tr><th>English</th><th>Japanese</th></tr></thead>' +
-          '<tbody>' +
-          portalKnownWords.map(w => `<tr><td>${w.en}</td><td>${w.ja}</td></tr>`).join('') +
-          '</tbody>';
+        tbl.innerHTML = '<thead><tr><th>English</th><th>Japanese</th></tr></thead>' +
+                        '<tbody>' +
+                        portalKnownWords.map(w => `<tr><td>${w.en}</td><td>${w.ja}</td></tr>`).join('') +
+                        '</tbody>';
         return;
-      } else {
-        container.style.display = 'flex';
-        reviewTableWrap.style.display = 'none';
       }
+
+      container.style.display = 'flex';
+      reviewTableWrap.style.display = 'none';
 
       const word = portalFlashcards[0];
       const wrapper = document.createElement('div');
@@ -286,14 +386,13 @@
       wrapper.onclick = () => {
         flipped = !flipped;
         wrapper.classList.toggle('flipped');
+        document.getElementById('flipSound').play();
+        const swooshAudio = document.getElementById('swoosh');
+if (swooshAudio) swooshAudio.play();
+        document.getElementById('controls').style.display = flipped ? 'flex' : 'none';
         if (flipped) {
           wrapper.classList.add('wiggle');
-          document.getElementById('flipSound').play();
-          document.getElementById('controls').style.display = 'flex';
           setTimeout(() => wrapper.classList.remove('wiggle'), 650);
-        } else {
-          document.getElementById('flipSound').play();
-          document.getElementById('controls').style.display = 'none';
         }
       };
 
@@ -310,47 +409,162 @@
       container.appendChild(wrapper);
     }
 
-    document.getElementById('knownBtn').onclick = () => {
-      if (portalFlashcards.length > 0) {
-        const word = portalFlashcards.shift();
-        progress[word.en] = (progress[word.en] || 0) + 1;
-        if (progress[word.en] >= REQUIRED_KNOWS) {
-          portalKnownWords.push(word);
-        } else {
-          const insertAt = Math.min(portalFlashcards.length, 2 + Math.floor(Math.random() * 2));
-          portalFlashcards.splice(insertAt, 0, word);
+    let matchingWords = [];
+let matchedWords = [];
+let timer;
+let remainingTime = 300; // 5 minutes
+
+function startMatching() {
+  document.getElementById('flashcards-section').style.display = 'none';
+  const matchSection = document.getElementById('matching-section');
+  if (matchSection) matchSection.style.display = 'block';
+  document.getElementById('matching-summary').style.display = 'none';
+
+  matchingWords = shuffle(portalWords.map(word => ({ ...word })));
+  matchedWords = [];
+  remainingTime = 300;
+  updateTimer();
+  clearInterval(timer);
+  timer = setInterval(() => {
+    remainingTime--;
+    updateTimer();
+    if (remainingTime <= 0) {
+      clearInterval(timer);
+      endMatching();
+    }
+  }, 1000);
+  nextMatch();
+}
+
+function updateTimer() {
+  const min = Math.floor(remainingTime / 60);
+  const sec = remainingTime % 60;
+  document.getElementById('timer').textContent = `⏱ ${min}:${sec.toString().padStart(2, '0')}`;
+}
+
+function nextMatch() {
+  const definitionBox = document.getElementById('definition');
+  const optionsBox = document.getElementById('option-buttons');
+
+  if (matchingWords.length === 0) {
+    endMatching();
+    return;
+  }
+
+  const current = matchingWords.pop();
+  const options = shuffle([
+    current,
+    ...shuffle(portalWords.filter(w => w.en !== current.en)).slice(0, 3)
+  ]);
+
+  definitionBox.textContent = current.definition;
+  optionsBox.innerHTML = '';
+
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.textContent = opt.en;
+    btn.className = 'mode-btn';
+    btn.style.border = '3px solid transparent';
+    btn.onclick = () => {
+      const correct = opt.en === current.en;
+      btn.style.borderColor = correct ? 'green' : 'red';
+      btn.style.boxShadow = `0 0 10px ${correct ? 'green' : 'red'}`;
+      const sound = document.getElementById(correct ? 'sound-correct' : 'sound-wrong');
+if (sound) sound.play();
+
+      if (!correct) {
+        const correctBtn = [...optionsBox.children].find(b => b.textContent === current.en);
+        if (correctBtn) {
+          correctBtn.style.borderColor = 'green';
+          correctBtn.style.boxShadow = '0 0 10px green';
         }
-        showNextCard();
       }
-    };
 
-    document.getElementById('againBtn').onclick = () => {
-      if (portalFlashcards.length > 0) {
-        const word = portalFlashcards.shift();
-        const insertAt = Math.min(portalFlashcards.length, 3 + Math.floor(Math.random() * 2));
+      setTimeout(() => {
+        matchedWords.push(current);
+        nextMatch();
+      }, 1200);
+    };
+    optionsBox.appendChild(btn);
+  });
+}
+
+function endMatching() {
+  clearInterval(timer);
+  document.getElementById('definition').textContent = '';
+  document.getElementById('option-buttons').innerHTML = '';
+  document.getElementById('matching-summary').style.display = 'block';
+
+  const tbody = document.getElementById('summary-body');
+  tbody.innerHTML = matchedWords.map(w => `<tr><td>${w.en}</td><td>${w.definition}</td></tr>`).join('');
+}
+
+function startSession() {
+  portalFlashcards = shuffle(portalWords.map(word => ({ ...word })));
+  portalKnownWords = [];
+  progress = {};
+  document.getElementById('flashcards-section').style.display = 'block';
+  document.getElementById('matching-section').style.display = 'none';
+  showNextCard();
+}
+
+document.getElementById('knownBtn').onclick = () => {
+  if (portalFlashcards.length > 0) {
+    const word = portalFlashcards.shift();
+    progress[word.en] = (progress[word.en] || 0) + 1;
+    if (progress[word.en] >= REQUIRED_KNOWS) {
+      portalKnownWords.push(word);
+    } else {
+      const insertAt = Math.min(portalFlashcards.length, 2 + Math.floor(Math.random() * 2));
+      portalFlashcards.splice(insertAt, 0, word);
+    }
+    showNextCard();
+  }
+};
+
+document.getElementById('againBtn').onclick = () => {
+  if (portalFlashcards.length > 0) {
+    const word = portalFlashcards.shift();
+    const insertAt = Math.min(portalFlashcards.length, 3 + Math.floor(Math.random() * 2));
+    portalFlashcards.splice(insertAt, 0, word);
+    showNextCard();
+  }
+};
+
+document.getElementById('reset-btn').onclick = () => {
+  startSession();
+};
+
+window.onload = () => {
+  document.getElementById('knownBtn').onclick = () => {
+    if (portalFlashcards.length > 0) {
+      const word = portalFlashcards.shift();
+      progress[word.en] = (progress[word.en] || 0) + 1;
+      if (progress[word.en] >= REQUIRED_KNOWS) {
+        portalKnownWords.push(word);
+      } else {
+        const insertAt = Math.min(portalFlashcards.length, 2 + Math.floor(Math.random() * 2));
         portalFlashcards.splice(insertAt, 0, word);
-        showNextCard();
       }
-    };
-
-    document.getElementById('reset-btn').onclick = () => {
-      startSession();
-    };
-
-    function startSession() {
-      portalFlashcards = shuffle(portalWords.map(word => ({ ...word })));
-      portalKnownWords = [];
-      progress = {};
-      document.getElementById('card-container').style.display = 'flex';
-      document.getElementById('review-table-wrap').style.display = 'none';
       showNextCard();
     }
+  };
 
-    document.addEventListener('touchstart', function (event) {
-      if (event.touches.length > 1) { event.preventDefault(); }
-    }, { passive: false });
+  document.getElementById('againBtn').onclick = () => {
+    if (portalFlashcards.length > 0) {
+      const word = portalFlashcards.shift();
+      const insertAt = Math.min(portalFlashcards.length, 3 + Math.floor(Math.random() * 2));
+      portalFlashcards.splice(insertAt, 0, word);
+      showNextCard();
+    }
+  };
 
-    window.onload = startSession;
-  </script>
+  document.getElementById('reset-btn').onclick = () => {
+    startSession();
+  };
+
+  startSession();
+};
+</script>
 </body>
 </html>
