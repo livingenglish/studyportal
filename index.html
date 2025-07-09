@@ -14,21 +14,24 @@
       height: 100%;
     }
     h1 {
-      font-size: 48px;
-      margin: 24px 0 24px 0;
+      font-size: 44px;
+      margin: 18px 0 16px 0;
+      font-weight: 900;
+      color: #ffbfa8;
+      letter-spacing: 1.5px;
     }
     #card-container {
       position: relative;
       width: 92vw;
-      max-width: 420px;
+      max-width: 380px;
       height: 66vw;
-      max-height: 600px;
+      max-height: 420px;
       margin: 0 auto;
       perspective: 1000px;
-      touch-action: manipulation;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       min-height: 220px;
       background: transparent;
+      touch-action: manipulation;
     }
     .card-wrapper {
       position: relative;
@@ -37,8 +40,8 @@
       transform-style: preserve-3d;
       transition: transform 0.6s cubic-bezier(.45,1.8,.6,1);
       cursor: pointer;
-      border-radius: 14px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.11);
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(103,175,207,0.10);
       background: transparent;
     }
     .card-wrapper.flipped {
@@ -48,29 +51,30 @@
     .front, .back {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      border-radius: 14px;
+      border-radius: 16px;
       background: white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+      box-shadow: 0 2px 10px rgba(255,191,168,0.14);
       display: flex;
       align-items: center;
       justify-content: center;
       backface-visibility: hidden;
-      font-size: 8vw;
-      min-height: 160px;
-      padding: 10px;
+      font-size: 2.6rem;
+      padding: 12px;
       user-select: none;
       word-break: break-word;
+      color: #333;
+      font-weight: 700;
     }
-    .front { z-index: 2; }
-    .back  { transform: rotateY(180deg); z-index: 1; }
+    .front { z-index: 2; color: #67afcf; }
+    .back  { transform: rotateY(180deg); z-index: 1; color: #ffbfa8;}
     @keyframes wiggle-flip {
       0%   { transform: rotateY(0deg)   rotateZ(0deg) scale(1); }
-      30%  { transform: rotateY(45deg)  rotateZ(-3deg) scale(1.02);}
-      60%  { transform: rotateY(130deg) rotateZ(3deg)  scale(1.02);}
+      30%  { transform: rotateY(45deg)  rotateZ(-2deg) scale(1.03);}
+      60%  { transform: rotateY(130deg) rotateZ(2deg)  scale(1.03);}
       100% { transform: rotateY(180deg) rotateZ(0deg)  scale(1);}
     }
     #controls {
-      margin-top: 24px;
+      margin-top: 26px;
       display: none;
       display: flex;
       justify-content: center;
@@ -78,24 +82,25 @@
     }
     .nav-btn {
       background-color: #ffbfa8;
+      color: #fff;
       border: none;
-      padding: 16px 20px;
+      padding: 16px 24px;
       margin: 0;
       cursor: pointer;
-      border-radius: 10px;
+      border-radius: 11px;
       font-size: 1.15rem;
       font-weight: bold;
-      box-shadow: 2px 2px 5px rgba(0,0,0,0.09);
+      box-shadow: 2px 2px 8px rgba(103,175,207,0.10);
       min-width: 115px;
-      min-height: 50px;
+      min-height: 54px;
       transition: background 0.18s;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.5em;
     }
-    #controls .nav-btn:first-child { background-color: #67cf94; }
-    #controls .nav-btn:last-child  { background-color: #cf6767; }
+    #controls .nav-btn:first-child { background-color: #67afcf; }
+    #controls .nav-btn:last-child  { background-color: #ffbfa8; }
     #reset-btn {
       margin: 28px auto 0 auto;
       background-color: #67afcf;
@@ -103,9 +108,9 @@
       font-weight: bold;
       font-size: 1.1rem;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       padding: 16px 38px;
-      box-shadow: 0 2px 7px rgba(0,0,0,0.13);
+      box-shadow: 0 2px 10px rgba(103,175,207,0.13);
       cursor: pointer;
       display: block;
       letter-spacing: 0.03em;
@@ -115,42 +120,51 @@
     table {
       margin: 18px auto;
       border-collapse: collapse;
-      width: 94vw;
-      max-width: 400px;
+      width: 92vw;
+      max-width: 370px;
       font-size: 1.15rem;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(103,175,207,0.09);
     }
     th, td {
-      border: 1px solid #ccc;
+      border: 1px solid #ffe3d6;
       padding: 10px 10px;
       text-align: left;
     }
-    th { background-color: #ffbfa8; }
-    /* Mobile first */
+    th { background-color: #ffbfa8; color: #fff;}
+    .deck-progress {
+      margin: 10px auto 8px auto;
+      color: #67afcf;
+      font-size: 1.15em;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
     @media (max-width: 500px) {
-      h1 { font-size: 32px; }
-      .front, .back { font-size: 7vw; min-height: 120px; }
-      #reset-btn { font-size: 1rem; padding: 14px 15px; }
-      .nav-btn { min-height: 44px; min-width: 80px; font-size: 1rem; }
-      #card-container { max-width: 99vw; height: 46vw; min-height: 110px;}
+      h1 { font-size: 28px; }
+      .front, .back { font-size: 1.4rem; min-height: 96px; }
+      #reset-btn { font-size: 0.98rem; padding: 12px 10px; }
+      .nav-btn { min-height: 44px; min-width: 70px; font-size: 0.96rem; }
+      #card-container { max-width: 98vw; height: 38vw; min-height: 90px;}
+      table { font-size: 1rem;}
     }
   </style>
 </head>
 <body>
   <h1>Study Portal</h1>
+  <div class="deck-progress" id="progress"></div>
   <audio id="flipSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
-
   <div id="card-container"></div>
-
   <div id="controls">
     <button id="knownBtn" class="nav-btn">✔ I know this</button>
     <button id="againBtn" class="nav-btn">✘ Study again</button>
   </div>
-
   <div id="reset-container" style="display:none;">
     <button id="reset-btn">Restart Practice</button>
   </div>
-
   <script>
+    // ---- DATA: Add/Edit your vocab here ----
     const portalWords = [
       { en: 'apple', ja: 'りんご' },
       { en: 'run', ja: '走る' },
@@ -163,10 +177,17 @@
       { en: 'book', ja: '本' },
       { en: 'eat', ja: '食べる' }
     ];
+
+    // --- Leitner-like spaced repetition ---
+    // Each card needs 3 "knows" to be mastered.
+    const REQUIRED_KNOWS = 3;
+
+    // Internal state
     let portalFlashcards = [];
     let portalKnownWords = [];
-    let flipped = false;
+    let progress = {};
 
+    // Shuffle function
     function shuffle(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -175,11 +196,22 @@
       return arr;
     }
 
+    function showProgress() {
+      const total = portalWords.length;
+      const mastered = portalKnownWords.length;
+      const reviewing = portalFlashcards.length;
+      document.getElementById('progress').textContent = 
+        mastered < total
+        ? `Words mastered: ${mastered}/${total}  |  Remaining: ${reviewing}`
+        : `All done! Words mastered: ${mastered}/${total}`;
+    }
+
     function showNextCard() {
       const container = document.getElementById('card-container');
       container.innerHTML = '';
       document.getElementById('controls').style.display = 'none';
       document.getElementById('reset-container').style.display = 'none';
+      showProgress();
 
       if (portalFlashcards.length === 0) {
         container.innerHTML = '<h2 style="margin-top:0;">You now know…</h2>';
@@ -197,7 +229,7 @@
       const word = portalFlashcards[0];
       const wrapper = document.createElement('div');
       wrapper.className = 'card-wrapper';
-      flipped = false;
+      let flipped = false;
 
       wrapper.onclick = () => {
         flipped = !flipped;
@@ -228,36 +260,47 @@
 
     document.getElementById('knownBtn').onclick = () => {
       if (portalFlashcards.length > 0) {
-        portalKnownWords.push(portalFlashcards.shift());
+        const word = portalFlashcards.shift();
+        progress[word.en] = (progress[word.en] || 0) + 1;
+        if (progress[word.en] >= REQUIRED_KNOWS) {
+          portalKnownWords.push(word);
+        } else {
+          // Re-insert card randomly after a few other cards
+          const insertAt = Math.min(portalFlashcards.length, 2 + Math.floor(Math.random() * 2));
+          portalFlashcards.splice(insertAt, 0, word);
+        }
         showNextCard();
       }
     };
 
     document.getElementById('againBtn').onclick = () => {
       if (portalFlashcards.length > 0) {
-        const w = portalFlashcards.shift();
-        const pos = Math.floor(Math.random() * (portalFlashcards.length + 1));
-        portalFlashcards.splice(pos, 0, w);
+        const word = portalFlashcards.shift();
+        // Don't increase known count
+        // Re-insert card further back
+        const insertAt = Math.min(portalFlashcards.length, 3 + Math.floor(Math.random() * 2));
+        portalFlashcards.splice(insertAt, 0, word);
         showNextCard();
       }
     };
 
     document.getElementById('reset-btn').onclick = () => {
-      portalFlashcards = shuffle([...portalWords]);
-      portalKnownWords = [];
-      showNextCard();
+      startSession();
     };
+
+    function startSession() {
+      portalFlashcards = shuffle(portalWords.map(word => ({ ...word })));
+      portalKnownWords = [];
+      progress = {};
+      showNextCard();
+    }
 
     // For mobile, prevent double-tap zoom
     document.addEventListener('touchstart', function (event) {
       if (event.touches.length > 1) { event.preventDefault(); }
     }, { passive: false });
 
-    window.onload = function() {
-      portalFlashcards = shuffle([...portalWords]);
-      portalKnownWords = [];
-      showNextCard();
-    };
+    window.onload = startSession;
   </script>
 </body>
 </html>
